@@ -70,6 +70,8 @@
 #include <plat/keypad.h>
 #include <plat/backlight.h>
 #include <plat/samsung-time.h>
+#include <linux/dm9000.h>
+#include <linux/platform_data/asoc-s3c.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -118,15 +120,15 @@ static struct s3c2410_uartcfg smdk6410_uartcfgs[] __initdata = {
  * GPN5 = LCD nRESET signal
  * PWM_TOUT1 => backlight brightness
  */
-
+/*
 static void smdk6410_lcd_power_set(struct plat_lcd_data *pd,
 				   unsigned int power)
 {
 	if (power) {
 		gpio_direction_output(S3C64XX_GPF(13), 1);
 
-		/* fire nRESET on power up */
-		gpio_direction_output(S3C64XX_GPN(5), 0);
+*/		/* fire nRESET on power up */
+/*		gpio_direction_output(S3C64XX_GPN(5), 0);
 		msleep(10);
 		gpio_direction_output(S3C64XX_GPN(5), 1);
 		msleep(1);
@@ -143,7 +145,7 @@ static struct platform_device smdk6410_lcd_powerdev = {
 	.name			= "platform-lcd",
 	.dev.parent		= &s3c_device_fb.dev,
 	.dev.platform_data	= &smdk6410_lcd_power_data,
-};
+};*/
 
 static struct s3c_fb_pd_win smdk6410_fb_win0 = {
 	.max_bpp	= 32,
@@ -174,6 +176,46 @@ static struct s3c_fb_platdata smdk6410_lcd_pdata __initdata = {
 	.vidcon1	= VIDCON1_INV_HSYNC | VIDCON1_INV_VSYNC,
 };
 
+/* Ethernet */
+#ifdef CONFIG_DM9000
+#define S3C64XX_PA_DM9000	(0x18000000)
+#define S3C64XX_SZ_DM9000	SZ_1M
+#define S3C64XX_VA_DM9000	S3C_ADDR(0x03b00300)
+
+static struct resource dm9000_resources[] = {
+	[0] = {
+		.start		= S3C64XX_PA_DM9000,
+		.end		= S3C64XX_PA_DM9000 + 3,
+		.flags		= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start		= S3C64XX_PA_DM9000 + 4,
+		.end		= S3C64XX_PA_DM9000 + S3C64XX_SZ_DM9000 - 1, 
+		.flags		= IORESOURCE_MEM,
+	},
+	[2] = {
+		.start		= IRQ_EINT(7),
+		.end		= IRQ_EINT(7),
+		.flags		= IORESOURCE_IRQ | IRQF_TRIGGER_HIGH,
+	},
+};
+
+static struct dm9000_plat_data dm9000_setup = {
+	.flags			= DM9000_PLATF_16BITONLY,
+	.dev_addr		= { 0x08, 0x90, 0x00, 0xa0, 0x90, 0x90 },
+};
+
+static struct platform_device s3c_device_dm9000 = {
+	.name			= "dm9000",
+	.id				= 0,
+	.num_resources	= ARRAY_SIZE(dm9000_resources),
+	.resource		= dm9000_resources,
+	.dev			= {
+		.platform_data = &dm9000_setup,
+	}
+};
+#endif //#ifdef CONFIG_DM9000
+
 /*
  * Configuring Ethernet on SMDK6410
  *
@@ -183,7 +225,7 @@ static struct s3c_fb_platdata smdk6410_lcd_pdata __initdata = {
  *  1) Set CFGB2 p3 ON others off, no other CFGB selects "ethernet"
  *  2) CFG6 needs to be switched to "LAN9115" side
  */
-
+/*
 static struct resource smdk6410_smsc911x_resources[] = {
 	[0] = DEFINE_RES_MEM(S3C64XX_PA_XM0CSN1, SZ_64K),
 	[1] = DEFINE_RES_NAMED(S3C_EINT(10), 1, NULL, IORESOURCE_IRQ \
@@ -206,7 +248,7 @@ static struct platform_device smdk6410_smsc911x = {
 	.dev = {
 		.platform_data = &smdk6410_smsc911x_pdata,
 	},
-};
+};*/
 
 #ifdef CONFIG_REGULATOR
 static struct regulator_consumer_supply smdk6410_b_pwr_5v_consumers[] __initdata = {
@@ -264,31 +306,36 @@ static struct samsung_keypad_platdata smdk6410_keypad_data __initdata = {
 static struct map_desc smdk6410_iodesc[] = {};
 
 static struct platform_device *smdk6410_devices[] __initdata = {
-#ifdef CONFIG_SMDK6410_SD_CH0
+//#ifdef CONFIG_SMDK6410_SD_CH0
 	&s3c_device_hsmmc0,
-#endif
-#ifdef CONFIG_SMDK6410_SD_CH1
+//#endif
+//#ifdef CONFIG_SMDK6410_SD_CH1
 	&s3c_device_hsmmc1,
-#endif
+//#endif
 	&s3c_device_i2c0,
-	&s3c_device_i2c1,
+//	&s3c_device_i2c1,
 	&s3c_device_fb,
 	&s3c_device_ohci,
-	&samsung_device_pwm,
+//	&samsung_device_pwm,
 	&s3c_device_usb_hsotg,
-	&s3c64xx_device_iisv4,
+//	&s3c64xx_device_iisv4,
 	&samsung_device_keypad,
 
-#ifdef CONFIG_REGULATOR
-	&smdk6410_b_pwr_5v,
+#ifdef CONFIG_DM9000
+	&s3c_device_dm9000,
 #endif
-	&smdk6410_lcd_powerdev,
 
-	&smdk6410_smsc911x,
-	&s3c_device_adc,
-	&s3c_device_cfcon,
+	&s3c64xx_device_ac97,
+//#ifdef CONFIG_REGULATOR
+//	&smdk6410_b_pwr_5v,
+//#endif
+//	&smdk6410_lcd_powerdev,
+
+//	&smdk6410_smsc911x,
+//	&s3c_device_adc,
+//	&s3c_device_cfcon,
 	&s3c_device_rtc,
-	&s3c_device_ts,
+//	&s3c_device_ts,
 	&s3c_device_wdt,
 };
 
@@ -657,13 +704,14 @@ static void __init smdk6410_machine_init(void)
 	u32 cs1;
 
 	s3c_i2c0_set_platdata(NULL);
-	s3c_i2c1_set_platdata(NULL);
-	s3c_fb_set_platdata(&smdk6410_lcd_pdata);
+//	s3c_i2c1_set_platdata(NULL);
+//	s3c_fb_set_platdata(&smdk6410_lcd_pdata);
 	s3c_hsotg_set_platdata(&smdk6410_hsotg_pdata);
 
 	samsung_keypad_set_platdata(&smdk6410_keypad_data);
 
-	s3c24xx_ts_set_platdata(NULL);
+	s3c64xx_ac97_setup_gpio(0);
+//	s3c24xx_ts_set_platdata(NULL);
 
 	/* configure nCS1 width to 16 bits */
 
@@ -685,17 +733,17 @@ static void __init smdk6410_machine_init(void)
 		     (4 << S3C64XX_SROM_BCX__TCOS__SHIFT) |
 		     (0 << S3C64XX_SROM_BCX__TACS__SHIFT), S3C64XX_SROM_BC1);
 
-	gpio_request(S3C64XX_GPN(5), "LCD power");
-	gpio_request(S3C64XX_GPF(13), "LCD power");
+//	gpio_request(S3C64XX_GPN(5), "LCD power");
+//	gpio_request(S3C64XX_GPF(13), "LCD power");
 
 	i2c_register_board_info(0, i2c_devs0, ARRAY_SIZE(i2c_devs0));
 	i2c_register_board_info(1, i2c_devs1, ARRAY_SIZE(i2c_devs1));
 
-	s3c_ide_set_platdata(&smdk6410_ide_pdata);
+//	s3c_ide_set_platdata(&smdk6410_ide_pdata);
 
 	platform_add_devices(smdk6410_devices, ARRAY_SIZE(smdk6410_devices));
 
-	samsung_bl_set(&smdk6410_bl_gpio_info, &smdk6410_bl_data);
+//	samsung_bl_set(&smdk6410_bl_gpio_info, &smdk6410_bl_data);
 }
 
 MACHINE_START(SMDK6410, "SMDK6410")
