@@ -1105,6 +1105,13 @@ static struct resource s3c64xx_spi0_resource[] = {
 	[3] = DEFINE_RES_IRQ(IRQ_SPI0),
 };
 
+struct s3c64xx_spi_info s3c64xx_spi0_pdata = {
+	.cfg_gpio = s3c64xx_spi0_cfg_gpio,
+//	.fifo_lvl_mask = 0x7f,
+//	.rx_lvl_offset = 13,
+//	.tx_st_done = 21,
+};
+
 struct platform_device s3c64xx_device_spi0 = {
 	.name		= "s3c6410-spi",
 	.id		= 0,
@@ -1113,6 +1120,7 @@ struct platform_device s3c64xx_device_spi0 = {
 	.dev = {
 		.dma_mask		= &samsung_device_dma_mask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
+		.platform_data = &s3c64xx_spi0_pdata,
 	},
 };
 
@@ -1150,6 +1158,13 @@ static struct resource s3c64xx_spi1_resource[] = {
 	[3] = DEFINE_RES_IRQ(IRQ_SPI1),
 };
 
+struct s3c64xx_spi_info s3c64xx_spi1_pdata = {
+	.cfg_gpio = s3c64xx_spi1_cfg_gpio,
+//	.fifo_lvl_mask = 0x7f,
+//	.rx_lvl_offset = 13,
+//	.tx_st_done = 21,
+};
+
 struct platform_device s3c64xx_device_spi1 = {
 	.name		= "s3c6410-spi",
 	.id		= 1,
@@ -1158,6 +1173,7 @@ struct platform_device s3c64xx_device_spi1 = {
 	.dev = {
 		.dma_mask		= &samsung_device_dma_mask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
+		.platform_data = &s3c64xx_spi1_pdata,
 	},
 };
 
