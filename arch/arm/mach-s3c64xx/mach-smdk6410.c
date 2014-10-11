@@ -72,6 +72,7 @@
 #include <plat/samsung-time.h>
 #include <linux/dm9000.h>
 #include <linux/platform_data/asoc-s3c.h>
+#include <linux/gpio_keys.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -113,39 +114,6 @@ static struct s3c2410_uartcfg smdk6410_uartcfgs[] __initdata = {
 	},
 };
 
-/* framebuffer and LCD setup. */
-
-/* GPF15 = LCD backlight control
- * GPF13 => Panel power
- * GPN5 = LCD nRESET signal
- * PWM_TOUT1 => backlight brightness
- */
-/*
-static void smdk6410_lcd_power_set(struct plat_lcd_data *pd,
-				   unsigned int power)
-{
-	if (power) {
-		gpio_direction_output(S3C64XX_GPF(13), 1);
-
-*/		/* fire nRESET on power up */
-/*		gpio_direction_output(S3C64XX_GPN(5), 0);
-		msleep(10);
-		gpio_direction_output(S3C64XX_GPN(5), 1);
-		msleep(1);
-	} else {
-		gpio_direction_output(S3C64XX_GPF(13), 0);
-	}
-}
-
-static struct plat_lcd_data smdk6410_lcd_power_data = {
-	.set_power	= smdk6410_lcd_power_set,
-};
-
-static struct platform_device smdk6410_lcd_powerdev = {
-	.name			= "platform-lcd",
-	.dev.parent		= &s3c_device_fb.dev,
-	.dev.platform_data	= &smdk6410_lcd_power_data,
-};*/
 
 static struct s3c_fb_pd_win smdk6410_fb_win0 = {
 	.max_bpp	= 32,
@@ -216,40 +184,71 @@ static struct platform_device s3c_device_dm9000 = {
 };
 #endif //#ifdef CONFIG_DM9000
 
-/*
- * Configuring Ethernet on SMDK6410
- *
- * Both CS8900A and LAN9115 chips share one chip select mediated by CFG6.
- * The constant address below corresponds to nCS1
- *
- *  1) Set CFGB2 p3 ON others off, no other CFGB selects "ethernet"
- *  2) CFG6 needs to be switched to "LAN9115" side
- */
-/*
-static struct resource smdk6410_smsc911x_resources[] = {
-	[0] = DEFINE_RES_MEM(S3C64XX_PA_XM0CSN1, SZ_64K),
-	[1] = DEFINE_RES_NAMED(S3C_EINT(10), 1, NULL, IORESOURCE_IRQ \
-					| IRQ_TYPE_LEVEL_LOW),
-};
-
-static struct smsc911x_platform_config smdk6410_smsc911x_pdata = {
-	.irq_polarity  = SMSC911X_IRQ_POLARITY_ACTIVE_LOW,
-	.irq_type      = SMSC911X_IRQ_TYPE_OPEN_DRAIN,
-	.flags         = SMSC911X_USE_32BIT | SMSC911X_FORCE_INTERNAL_PHY,
-	.phy_interface = PHY_INTERFACE_MODE_MII,
-};
-
-
-static struct platform_device smdk6410_smsc911x = {
-	.name          = "smsc911x",
-	.id            = -1,
-	.num_resources = ARRAY_SIZE(smdk6410_smsc911x_resources),
-	.resource      = &smdk6410_smsc911x_resources[0],
-	.dev = {
-		.platform_data = &smdk6410_smsc911x_pdata,
+/* gpio buttons */
+static struct gpio_keys_button gpio_buttons[] = {
+	{
+		.gpio		= S3C64XX_GPN(0),
+		//.code		= 25,
+		.code		= KEY_UP,
+		.desc		= "BUTTON1",
+		.active_low	= 1,
+		.wakeup		= 0,
 	},
-};*/
+	{
+		.gpio		= S3C64XX_GPN(1),
+		//.code		= 42,
+		.code		= KEY_DOWN,
+		.desc		= "BUTTON2",
+		.active_low	= 1,
+		.wakeup		= 0,
+	},
+	{
+		.gpio		= S3C64XX_GPN(2),
+		//.code		= 50,
+		.code		= KEY_LEFT,
+		.desc		= "BUTTON3",
+		.active_low	= 1,
+		.wakeup		= 0,
+	},
+	{
+		.gpio		= S3C64XX_GPN(3),
+		//.code		= 10,
+		.code		= KEY_RIGHT,
+		.desc		= "BUTTON4",
+		.active_low	= 1,
+		.wakeup		= 0,
+	},
+	{
+		.gpio		= S3C64XX_GPN(4),
+		//.code		= 24,
+		.code		= KEY_ENTER,
+		.desc		= "BUTTON5",
+		.active_low	= 1,
+		.wakeup		= 0,
+	},
+	{
+		.gpio		= S3C64XX_GPN(5),
+		//.code		= 38,
+		.code		= KEY_ESC,
+		.desc		= "BUTTON6",
+		.active_low	= 1,
+		.wakeup		= 0,
+	}
+};
 
+static struct gpio_keys_platform_data gpio_button_data = {
+	.buttons	= gpio_buttons,
+	.nbuttons	= ARRAY_SIZE(gpio_buttons),
+};
+
+static struct platform_device gpio_button_device = {
+	.name		= "gpio-keys",
+	.id		= -1,
+	.num_resources	= 0,
+	.dev		= {
+		.platform_data	= &gpio_button_data,
+	}
+};
 #ifdef CONFIG_REGULATOR
 static struct regulator_consumer_supply smdk6410_b_pwr_5v_consumers[] __initdata = {
 	REGULATOR_SUPPLY("PVDD", "0-001b"),
@@ -279,10 +278,6 @@ static struct platform_device smdk6410_b_pwr_5v = {
 	},
 };
 #endif
-
-static struct s3c_ide_platdata smdk6410_ide_pdata __initdata = {
-	.setup_gpio	= s3c64xx_ide_setup_gpio,
-};
 
 static uint32_t smdk6410_keymap[] __initdata = {
 	/* KEY(row, col, keycode) */
@@ -324,7 +319,7 @@ static struct platform_device *smdk6410_devices[] __initdata = {
 #ifdef CONFIG_DM9000
 	&s3c_device_dm9000,
 #endif
-
+	&gpio_button_device,
 	&s3c64xx_device_ac97,
 //#ifdef CONFIG_REGULATOR
 //	&smdk6410_b_pwr_5v,
@@ -662,17 +657,6 @@ static struct i2c_board_info i2c_devs0[] __initdata = {
 
 static struct i2c_board_info i2c_devs1[] __initdata = {
 	{ I2C_BOARD_INFO("24c128", 0x57), },	/* Samsung S524AD0XD1 */
-};
-
-/* LCD Backlight data */
-static struct samsung_bl_gpio_info smdk6410_bl_gpio_info = {
-	.no = S3C64XX_GPF(15),
-	.func = S3C_GPIO_SFN(2),
-};
-
-static struct platform_pwm_backlight_data smdk6410_bl_data = {
-	.pwm_id = 1,
-	.enable_gpio = -1,
 };
 
 static struct s3c_hsotg_plat smdk6410_hsotg_pdata;
