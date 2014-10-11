@@ -72,7 +72,9 @@
 #include <plat/samsung-time.h>
 #include <linux/dm9000.h>
 #include <linux/platform_data/asoc-s3c.h>
+#include <linux/platform_data/spi-s3c64xx.h>
 #include <linux/gpio_keys.h>
+#include <linux/can/platform/mcp251x.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -298,6 +300,48 @@ static struct samsung_keypad_platdata smdk6410_keypad_data __initdata = {
 	.cols		= 8,
 };
 
+/*add by fatfish for mcp251x*/
+//static void  cs_set_level(unsigned line_id, int lvl) {
+//    gpio_direction_output(line_id, lvl);
+//};
+
+static struct s3c64xx_spi_csinfo s3c64xx_spi1_csinfo = {
+  	.fb_delay=0x3,
+  	.line=S3C64XX_GPC(7),
+  	//.set_level=cs_set_level,
+};
+/*
+static int mcp251x_ioSetup(struct spi_device *spi)
+{
+	printk(KERN_INFO "mcp251x: setup gpio pins CS and External Int\n");
+	s3c_gpio_setpull(S3C64XX_GPL(8), S3C_GPIO_PULL_UP);		// External interrupt from CAN controller
+	s3c_gpio_cfgpin(S3C64XX_GPL(8), S3C_GPIO_SFN(3)); 		// External interrupt from CAN controller (hopefully external interrupt)
+	//s3c_gpio_cfgpin(S3C64XX_GPL(8), S3C_GPIO_INPUT);		// External interrupt from CAN controller
+	s3c_gpio_setpull(S3C64XX_GPC(7), S3C_GPIO_PULL_NONE);	// Manual chip select pin as used in 6410_set_cs
+	s3c_gpio_cfgpin(S3C64XX_GPC(7), S3C_GPIO_OUTPUT);		// Manual chip select pin as used in 6410_set_cs
+	return 0;
+}
+*/
+static struct mcp251x_platform_data mcp251x_info = {
+	.oscillator_frequency = 8000000,
+	//.board_specific_setup = mcp251x_ioSetup,
+	//.transceiver_enable = NULL,
+	//.power_enable = NULL,
+};
+
+static struct spi_board_info __initdata forlinx6410_mc251x_info[]  = {
+	{
+		.modalias = "mcp2515",	
+		.platform_data = &mcp251x_info,
+		.irq = IRQ_EINT(16),
+		.max_speed_hz = 10*1000*1000,	
+		.bus_num = 1,
+		.chip_select = 0,
+		.mode = SPI_MODE_0,	
+		.controller_data=&s3c64xx_spi1_csinfo,
+	},
+};
+
 static struct map_desc smdk6410_iodesc[] = {};
 
 static struct platform_device *smdk6410_devices[] __initdata = {
@@ -332,6 +376,9 @@ static struct platform_device *smdk6410_devices[] __initdata = {
 	&s3c_device_rtc,
 //	&s3c_device_ts,
 	&s3c_device_wdt,
+
+	&s3c64xx_device_spi0,
+	&s3c64xx_device_spi1,
 };
 
 #ifdef CONFIG_REGULATOR
@@ -724,6 +771,9 @@ static void __init smdk6410_machine_init(void)
 	i2c_register_board_info(1, i2c_devs1, ARRAY_SIZE(i2c_devs1));
 
 //	s3c_ide_set_platdata(&smdk6410_ide_pdata);
+	s3c64xx_spi0_set_platdata(NULL,0,1);
+	s3c64xx_spi1_set_platdata(NULL,0,1);
+	spi_register_board_info(forlinx6410_mc251x_info,ARRAY_SIZE(forlinx6410_mc251x_info));
 
 	platform_add_devices(smdk6410_devices, ARRAY_SIZE(smdk6410_devices));
 

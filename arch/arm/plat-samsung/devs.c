@@ -1097,7 +1097,7 @@ struct platform_device s3c_device_wdt = {
 };
 #endif /* CONFIG_S3C_DEV_WDT */
 
-#ifdef CONFIG_S3C64XX_DEV_SPI0
+//#ifdef CONFIG_S3C64XX_DEV_SPI0
 static struct resource s3c64xx_spi0_resource[] = {
 	[0] = DEFINE_RES_MEM(S3C_PA_SPI0, SZ_256),
 	[1] = DEFINE_RES_DMA(DMACH_SPI0_TX),
@@ -1140,9 +1140,9 @@ void __init s3c64xx_spi0_set_platdata(int (*cfg_gpio)(void), int src_clk_nr,
 
 	s3c_set_platdata(&pd, sizeof(pd), &s3c64xx_device_spi0);
 }
-#endif /* CONFIG_S3C64XX_DEV_SPI0 */
+//#endif /* CONFIG_S3C64XX_DEV_SPI0 */
 
-#ifdef CONFIG_S3C64XX_DEV_SPI1
+//#ifdef CONFIG_S3C64XX_DEV_SPI1
 static struct resource s3c64xx_spi1_resource[] = {
 	[0] = DEFINE_RES_MEM(S3C_PA_SPI1, SZ_256),
 	[1] = DEFINE_RES_DMA(DMACH_SPI1_TX),
@@ -1183,7 +1183,7 @@ void __init s3c64xx_spi1_set_platdata(int (*cfg_gpio)(void), int src_clk_nr,
 
 	s3c_set_platdata(&pd, sizeof(pd), &s3c64xx_device_spi1);
 }
-#endif /* CONFIG_S3C64XX_DEV_SPI1 */
+//#endif /* CONFIG_S3C64XX_DEV_SPI1 */
 
 #ifdef CONFIG_S3C64XX_DEV_SPI2
 static struct resource s3c64xx_spi2_resource[] = {
