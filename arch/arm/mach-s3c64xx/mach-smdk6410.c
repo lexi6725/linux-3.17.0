@@ -75,6 +75,7 @@
 #include <linux/platform_data/spi-s3c64xx.h>
 #include <linux/gpio_keys.h>
 #include <linux/can/platform/mcp251x.h>
+#include <mach/ts.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -342,6 +343,16 @@ static struct spi_board_info __initdata forlinx6410_mc251x_info[]  = {
 	},
 };
 
+#ifdef CONFIG_TOUCHSCREEN_S3C
+static struct s3c_ts_mach_info s3c_ts_platform __initdata = {
+	.delay 			= 10000,
+	.presc 			= 49,
+	.oversampling_shift	= 2,
+	.resol_bit 		= 12,
+	.s3c_adc_con		= ADC_TYPE_2,
+};
+#endif
+
 static struct map_desc smdk6410_iodesc[] = {};
 
 static struct platform_device *smdk6410_devices[] __initdata = {
@@ -374,7 +385,9 @@ static struct platform_device *smdk6410_devices[] __initdata = {
 //	&s3c_device_adc,
 //	&s3c_device_cfcon,
 	&s3c_device_rtc,
-//	&s3c_device_ts,
+#ifdef CONFIG_TOUCHSCREEN_S3C
+	&s3c_device_ts,
+#endif
 	&s3c_device_wdt,
 
 	&s3c64xx_device_spi0,
@@ -744,6 +757,7 @@ static void __init smdk6410_machine_init(void)
 	s3c64xx_ac97_setup_gpio(0);
 //	s3c24xx_ts_set_platdata(NULL);
 
+	s3c_ts_set_platdata(&s3c_ts_platform);
 	/* configure nCS1 width to 16 bits */
 
 	cs1 = __raw_readl(S3C64XX_SROM_BW) &

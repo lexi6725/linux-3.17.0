@@ -154,7 +154,6 @@ config MACH_SMDK6410
 	select SAMSUNG_DEV_IDE
 	select SAMSUNG_DEV_KEYPAD
 	select SAMSUNG_DEV_PWM
-	select SAMSUNG_DEV_TS
 	help
 	  Machine support for the Samsung SMDK6410
 

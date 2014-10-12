@@ -404,6 +404,7 @@ static struct samsung_clock_alias s3c64xx_clock_aliases[] = {
 	ALIAS(PCLK_IIS0, "samsung-i2s.0", "iis"),
 	ALIAS(PCLK_AC97, "samsung-ac97", "ac97"),
 	ALIAS(PCLK_TSADC, "s3c64xx-adc", "adc"),
+	ALIAS(PCLK_TSADC, NULL, "adc"),
 	ALIAS(PCLK_KEYPAD, "samsung-keypad", "keypad"),
 	ALIAS(PCLK_PCM1, "samsung-pcm.1", "pcm"),
 	ALIAS(PCLK_PCM0, "samsung-pcm.0", "pcm"),

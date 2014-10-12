@@ -600,5 +600,13 @@ config TILE_SROM
 	  device appear much like a simple EEPROM, and knows
 	  how to partition a single ROM for multiple purposes.
 
+config FORLINX6410_ADC
+	tristate "ADC driver for forlinx6410"
+	depends on CPU_S3C6410
+	default y
+	help
+	  this is a simple ADC  driver for forlinx6410
+
+
 endmenu
 
