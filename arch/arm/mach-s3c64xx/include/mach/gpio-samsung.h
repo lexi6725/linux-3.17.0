@@ -73,7 +73,7 @@ enum s3c_gpio_number {
 #define S3C64XX_GPF(_nr)	(S3C64XX_GPIO_F_START + (_nr))
 #define S3C64XX_GPG(_nr)	(S3C64XX_GPIO_G_START + (_nr))
 #define S3C64XX_GPH(_nr)	(S3C64XX_GPIO_H_START + (_nr))
-#define S3C64XX_GPI(_nr)	(S3C64XX_GPIO_I_START + (_nr))
+#define S3C64XX_GPI(_nr)		(S3C64XX_GPIO_I_START + (_nr))
 #define S3C64XX_GPJ(_nr)	(S3C64XX_GPIO_J_START + (_nr))
 #define S3C64XX_GPK(_nr)	(S3C64XX_GPIO_K_START + (_nr))
 #define S3C64XX_GPL(_nr)	(S3C64XX_GPIO_L_START + (_nr))

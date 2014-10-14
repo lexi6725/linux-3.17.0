@@ -353,7 +353,15 @@ static struct s3c_ts_mach_info s3c_ts_platform __initdata = {
 };
 #endif
 
-static struct map_desc smdk6410_iodesc[] = {};
+static struct map_desc smdk6410_iodesc[] = {
+	{
+		/* LCD support */
+		.virtual    = (unsigned long)S3C_VA_LCD,
+		.pfn        = __phys_to_pfn(S3C_PA_FB),
+		.length     = SZ_16K,
+		.type       = MT_DEVICE,
+	},
+};
 
 static struct platform_device *smdk6410_devices[] __initdata = {
 //#ifdef CONFIG_SMDK6410_SD_CH0
@@ -749,7 +757,7 @@ static void __init smdk6410_machine_init(void)
 
 	s3c_i2c0_set_platdata(NULL);
 //	s3c_i2c1_set_platdata(NULL);
-//	s3c_fb_set_platdata(&smdk6410_lcd_pdata);
+	s3c_fb_set_platdata(&smdk6410_lcd_pdata);
 	s3c_hsotg_set_platdata(&smdk6410_hsotg_pdata);
 
 	samsung_keypad_set_platdata(&smdk6410_keypad_data);
