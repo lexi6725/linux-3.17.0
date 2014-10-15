@@ -1154,14 +1154,14 @@ static int s3c_nand_probe(struct platform_device *pdev, enum s3c_cpu_type cpu_ty
 
     /* get the clock source and enable it */
 
-    s3c_nand.clk = clk_get(&pdev->dev, "nand");
+    s3c_nand.clk = devm_clk_get(&pdev->dev, "nand");
     if (IS_ERR(s3c_nand.clk)) {
         dev_err(&pdev->dev, "failed to get clock");
         err = -ENOENT;
         goto exit_error;
     }
 
-    clk_enable(s3c_nand.clk);
+    clk_prepare_enable(s3c_nand.clk);
 
     /* allocate and map the resource */
 
