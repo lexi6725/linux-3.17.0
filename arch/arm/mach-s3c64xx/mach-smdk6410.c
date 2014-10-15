@@ -76,6 +76,9 @@
 #include <linux/gpio_keys.h>
 #include <linux/can/platform/mcp251x.h>
 #include <mach/ts.h>
+#include <linux/mtd/partitions.h>
+#include <plat/nand.h>
+#include <uapi/mtd/mtd-abi.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -252,6 +255,54 @@ static struct platform_device gpio_button_device = {
 		.platform_data	= &gpio_button_data,
 	}
 };
+
+#ifdef CONFIG_MTD_NAND_S3C
+/*
+ * Configuring Nandflash on SMDK6410
+ */
+struct mtd_partition ok6410_nand_part[] = {
+	{
+		.name		= "Bootloader",
+		.offset		= 0,
+		.size		= (2 * SZ_1M),
+		.mask_flags	= MTD_CAP_NANDFLASH,
+	},
+	{
+		.name		= "Kernel",
+		.offset		= (2 * SZ_1M),
+		.size		= (5*SZ_1M) ,
+		.mask_flags	= MTD_CAP_NANDFLASH,
+	},
+	{
+		.name		= "User",
+		.offset		= (7 * SZ_1M),
+		.size		= (200*SZ_1M) ,
+	},
+	{
+		.name		= "File System",
+		.offset		= MTDPART_OFS_APPEND,
+		.size		= MTDPART_SIZ_FULL,
+	}
+};
+
+static struct s3c2410_nand_set ok6410_nand_sets[] = {
+	[0] = {
+		.name       = "nand",
+		.nr_chips   = 1,
+		.nr_partitions  = ARRAY_SIZE(ok6410_nand_part),
+		.partitions = ok6410_nand_part,
+	},
+};
+
+static struct s3c2410_platform_nand ok6410_nand_info = {
+	.tacls      = 25,
+	.twrph0     = 55,
+	.twrph1     = 40,
+	.nr_sets    = ARRAY_SIZE(ok6410_nand_sets),
+	.sets       = ok6410_nand_sets,
+};
+#endif
+
 #ifdef CONFIG_REGULATOR
 static struct regulator_consumer_supply smdk6410_b_pwr_5v_consumers[] __initdata = {
 	REGULATOR_SUPPLY("PVDD", "0-001b"),
@@ -384,6 +435,7 @@ static struct platform_device *smdk6410_devices[] __initdata = {
 #endif
 	&gpio_button_device,
 	&s3c64xx_device_ac97,
+	&s3c_device_nand,
 //#ifdef CONFIG_REGULATOR
 //	&smdk6410_b_pwr_5v,
 //#endif
@@ -765,6 +817,7 @@ static void __init smdk6410_machine_init(void)
 	s3c64xx_ac97_setup_gpio(0);
 //	s3c24xx_ts_set_platdata(NULL);
 
+	s3c_nand_set_platdata(&ok6410_nand_info);  // lexi
 	s3c_ts_set_platdata(&s3c_ts_platform);
 	/* configure nCS1 width to 16 bits */
 
