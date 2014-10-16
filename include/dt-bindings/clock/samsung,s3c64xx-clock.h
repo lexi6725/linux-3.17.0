@@ -61,6 +61,7 @@
 #define HCLK_INTC		43
 #define HCLK_MFC		44
 #define HCLK_DDR0		45
+#define HCLK_NAND		46
 
 /* PCLK bus clocks. */
 #define PCLK_IIC1		48

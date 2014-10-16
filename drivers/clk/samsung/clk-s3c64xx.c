@@ -397,6 +397,7 @@ static struct samsung_clock_alias s3c64xx_clock_aliases[] = {
 	ALIAS(HCLK_DMA0, "dma-pl080s.0", "apb_pclk"),
 	ALIAS(HCLK_CAMIF, "s3c-camif", "camif"),
 	ALIAS(HCLK_LCD, NULL, "lcd"),
+	ALIAS(HCLK,"s3c6400-nand", "nand"),
 	ALIAS(PCLK_SPI1, "s3c6410-spi.1", "spi"),
 	ALIAS(PCLK_SPI0, "s3c6410-spi.0", "spi"),
 	ALIAS(PCLK_IIC0, "s3c2440-i2c.0", "i2c"),
