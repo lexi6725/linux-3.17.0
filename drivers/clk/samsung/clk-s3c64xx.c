@@ -387,6 +387,7 @@ static struct samsung_clock_alias s3c64xx_clock_aliases[] = {
 	ALIAS(ARMCLK, NULL, "armclk"),
 	ALIAS(HCLK_UHOST, "s3c2410-ohci", "usb-host"),
 	ALIAS(HCLK_USB, "s3c-hsotg", "otg"),
+	ALIAS(HCLK_USB, "s3c2410-ohci", "otg"),
 	ALIAS(HCLK_HSMMC2, "s3c-sdhci.2", "hsmmc"),
 	ALIAS(HCLK_HSMMC2, "s3c-sdhci.2", "mmc_busclk.0"),
 	ALIAS(HCLK_HSMMC1, "s3c-sdhci.1", "hsmmc"),

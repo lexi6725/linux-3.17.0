@@ -79,6 +79,7 @@
 #include <linux/mtd/partitions.h>
 #include <plat/nand.h>
 #include <uapi/mtd/mtd-abi.h>
+#include <plat/regs-usb-hsotg-phy.h>
 
 #include "common.h"
 #include "regs-modem.h"
@@ -404,6 +405,28 @@ static struct s3c_ts_mach_info s3c_ts_platform __initdata = {
 };
 #endif
 
+#ifdef CONFIG_USB_SUPPORT
+/* Initializes OTG Phy. to output 48M clock */
+void s3c_otg_phy_config(int enable) {
+	u32 val;
+
+	if (enable) {
+		__raw_writel(0x0, S3C_PHYPWR);	/* Power up */
+
+		val = __raw_readl(S3C_PHYCLK);
+		val &= ~S3C_PHYCLK_CLKSEL_MASK;
+		__raw_writel(val, S3C_PHYCLK);
+
+		__raw_writel(0x1, S3C_RSTCON);
+		udelay(5);
+		__raw_writel(0x0, S3C_RSTCON);	/* Finish the reset */
+		udelay(5);
+	} else {
+		__raw_writel(0x19, S3C_PHYPWR);	/* Power down */
+	}
+}
+EXPORT_SYMBOL(s3c_otg_phy_config);
+#endif
 static struct map_desc smdk6410_iodesc[] = {
 	{
 		/* LCD support */
