@@ -689,7 +689,9 @@ struct fb_ops s3cfb_ops = {
 	.fb_fillrect	= cfb_fillrect,
 	.fb_copyarea	= cfb_copyarea,
 	.fb_imageblit	= cfb_imageblit,
+	#ifdef SOFT_CURSOR
 	.fb_cursor	= soft_cursor,
+	#endif
 	.fb_ioctl	= s3cfb_ioctl,
 };
 

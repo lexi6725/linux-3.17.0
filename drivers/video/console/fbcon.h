@@ -217,7 +217,7 @@ static inline int attr_col_ec(int shift, struct vc_data *vc,
 extern void fbcon_set_tileops(struct vc_data *vc, struct fb_info *info);
 #endif
 extern void fbcon_set_bitops(struct fbcon_ops *ops);
-extern int  soft_cursor(struct fb_info *info, struct fb_cursor *cursor);
+//extern int  soft_cursor(struct fb_info *info, struct fb_cursor *cursor);
 
 #define FBCON_ATTRIBUTE_UNDERLINE 1
 #define FBCON_ATTRIBUTE_REVERSE   2

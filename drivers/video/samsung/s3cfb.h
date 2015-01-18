@@ -488,7 +488,9 @@ typedef struct {
 extern s3cfb_info_t s3cfb_info[];
 extern s3cfb_fimd_info_t s3cfb_fimd;
 
+#ifdef SOFT_CURSOR
 extern int soft_cursor(struct fb_info *info, struct fb_cursor *cursor);
+#endif
 extern int s3cfb_ioctl(struct fb_info *info, unsigned int cmd, unsigned long arg);
 extern void s3cfb_activate_var(s3cfb_info_t *fbi, struct fb_var_screeninfo *var);
 extern void s3cfb_set_fb_addr(s3cfb_info_t *fbi);

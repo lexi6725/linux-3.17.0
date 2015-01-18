@@ -276,7 +276,7 @@ struct mtd_partition ok6410_nand_part[] = {
 	{
 		.name		= "User",
 		.offset		= (7 * SZ_1M),
-		.size		= (200*SZ_1M) ,
+		.size		= (1993*SZ_1M) ,
 	},
 	{
 		.name		= "File System",

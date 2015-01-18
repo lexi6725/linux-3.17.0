@@ -51,6 +51,13 @@ if FB || SGI_NEWPORT_CONSOLE
 
 endif
 
+config SOFT_CURSOR
+	tristate "SOFT_CURSOR"
+	default n
+	help
+		SOFT_CURSOR
+
+
 source "drivers/video/samsung/Kconfig"
 
 endmenu

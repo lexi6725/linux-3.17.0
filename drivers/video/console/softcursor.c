@@ -19,6 +19,7 @@
 
 #include "fbcon.h"
 
+#ifdef SOFT_CURSOR
 int soft_cursor(struct fb_info *info, struct fb_cursor *cursor)
 {
 	struct fbcon_ops *ops = info->fbcon_par;
@@ -76,7 +77,7 @@ int soft_cursor(struct fb_info *info, struct fb_cursor *cursor)
 }
 
 EXPORT_SYMBOL(soft_cursor);
-
+#endif
 MODULE_AUTHOR("James Simmons <jsimmons@users.sf.net>");
 MODULE_DESCRIPTION("Generic software cursor");
 MODULE_LICENSE("GPL");
